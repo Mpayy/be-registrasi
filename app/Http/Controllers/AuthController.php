@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator; // untuk fungsi bawaan untuk validasi
+use App\Helpers\ResponseHelper;
 
 
 class AuthController extends Controller
@@ -63,19 +64,23 @@ class AuthController extends Controller
             ]);
 
             if($validator->fails()){
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validation error',
-                    'error' => $validator->errors()
-                ], 422);
+                // return response()->json([
+                //     'status' => false,
+                //     'message' => 'Validation error',
+                //     'error' => $validator->errors()
+                // ], 422);
+
+                return ResponseHelper::error('Validation Error', $validator->errors(), 422);
             }
 
             $user = User::where('email', $request->email)->first();
             if(!$user || !Hash::check($request->password, $user->password)){
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Invalid Credential',
-                ], 401);
+                // return response()->json([
+                //     'status' => false,
+                //     'message' => 'Invalid Credential',
+                // ], 401);
+
+                return ResponseHelper::error('Invalid Credential','', 401);
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
@@ -87,11 +92,13 @@ class AuthController extends Controller
             ]);
 
         } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Intenal Server Error',
-                'error' => $th->getMessage()
-            ], 500);
+            // return response()->json([
+            //     'status' => false,
+            //     'message' => 'Intenal Server Error',
+            //     'error' => $th->getMessage()
+            // ], 500);
+
+            return ResponseHelper::error('Intenal Server Error',$th->getMessage(), 500);
         }
     }
 }
