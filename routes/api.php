@@ -21,6 +21,6 @@ Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
 // route middleware
 Route::middleware('auth:sanctum')->group(function(){
     // route user
-    Route::apiResource('users', UserController::class);
 
 });
+Route::apiResource('users', UserController::class);

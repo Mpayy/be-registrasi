@@ -97,7 +97,7 @@ class UserController extends Controller
                 [
                     'name' => 'required|string',
                     'email' => 'required|email|unique:users,email,'.$id,
-                    'password' => 'required|min:8'
+                    // 'password' => 'min:8'
                 ]);
 
                 if($validator->fails()){
@@ -111,13 +111,15 @@ class UserController extends Controller
                     'name' => $request->name,
                     'email' => $request->email
                 ];
-
+            $user = User::find($id);
                 if($request->filled('password')){
                     $data['password'] = $request->password;
+            } else {
+                $data['password'] = $user->password;
                 }
 
-                $user = User::find($id);
-                $user->update($data);
+
+            $user->update($data);
                 return response()->json([
                     'status' => true,
                     'message' => 'Update user success',
