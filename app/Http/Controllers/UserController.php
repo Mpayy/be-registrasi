@@ -15,7 +15,7 @@ class UserController extends Controller
     public function index()
     {
         // bisa pakai all atau get
-        $user = User::all();
+        $user = User::with('role')->get();
         return response()->json([
             'status' => true,
             'message' => 'Get user success',
@@ -32,14 +32,7 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string',
                 'email' => 'required|email|unique:users,email',
-                'password' => 'required|min:8' // confirmed untuk verifikasi dua langkah
-                // untuk mengetes buat payload
-                // {
-                //     "name" : "Achmad Rifaih",
-                //     "email" : "rifaih712@gmail.com",
-                //     "password" : "12345678",
-                //     "password_confirmation" : "12345678"
-                // }
+                'password' => 'required|min:8'
             ]);
 
             // Logika jika gagal
@@ -54,7 +47,8 @@ class UserController extends Controller
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => $request->password
+                'password' => $request->password,
+                'role_id' => $request->role_id
             ]);
 
             // kembalikan respon
@@ -77,7 +71,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::find($id);
+        $user = User::with('role')->find($id);
         return response()->json([
             'status' => true,
             'message' => 'Get user by id success',
@@ -92,12 +86,13 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            $validator = Validator::make(
-                $request->all(),
-                [
+            $validator = Validator::make($request->all(),[
                     'name' => 'required|string',
                     'email' => 'required|email|unique:users,email,'.$id,
+<<<<<<< HEAD
                     // 'password' => 'min:8'
+=======
+>>>>>>> d28f082 (menambah Role)
                 ]);
 
                 if($validator->fails()){
@@ -109,7 +104,9 @@ class UserController extends Controller
 
                 $data = [
                     'name' => $request->name,
-                    'email' => $request->email
+                    'email' => $request->email,
+                    'password'=> $request->password,
+                    'role_id' => $request->role_id
                 ];
             $user = User::find($id);
                 if($request->filled('password')){
